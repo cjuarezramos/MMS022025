@@ -56,7 +56,7 @@ for i in range(N):
     k2 = f(vtemp)
     v_rk23[i+1] = v_rk23[i] + h*(1/3*k1+2/3*k2)
 
-
+# Método RK4
 
 
 #Gráficos
@@ -64,6 +64,7 @@ plt.plot(t, v_analitica, label='Analitica', color='blue')
 plt.plot(t, v_euler, label='Euler', color='red')
 plt.plot(t, v_heun, label='Heun', color='black')
 plt.plot(t, v_rk23, label='RK23', color='green')
+plt.plot(t, v_rk4, label='RK4', color='orange')
 plt.xlabel('Tiempo (s)')
 plt.ylabel('Velocidad (m/s)')
 plt.title('Velocidad del sistema con friccion')
