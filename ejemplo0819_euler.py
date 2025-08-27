@@ -8,10 +8,10 @@ import matplotlib.pyplot as plt
 M = 10 # Masa del sistema kg
 B = 0.1 # Coeficiente de friccion kg/s
 # Condiciones iniciales
-v0 = 50 # Velocidad inicial m/s
+v0 = 0 # Velocidad inicial m/s
 # Tiempo de simulacion
 t0 = 0 # s
-tf = 500 # s
+tf = 1000 # s
 N = 10 # Numero de intervalos
 # Vector de tiempo
 t = np.linspace(t0, tf, N+1)
@@ -31,7 +31,7 @@ plt.show()
 h = (tf - t0) / N
 # Inicializando arreglos para almacenar la solución
 v_euler = np.zeros(N+1)
-v_euler[0] = v0  # Condición inicial
+v_euler[0] =  v0  # Condición inicial
 # método de euler
 for i in range(N):
     v_euler[i+1] = v_euler[i] + h * (-B/M * v_euler[i])
@@ -42,7 +42,8 @@ v_heun = np.zeros(N+1)
 v_heun[0] = v0
 # dv/dt = -B/M*v
 def f(v):
-    return -B/M*v
+    return -B/M*v + 1
+
 for i in range(N):
     vtemp = v_heun[i] + h*f(v_heun[i])
     v_heun[i+1] = v_heun[i] + h*(f(v_heun[i])+f(vtemp))/2
@@ -57,6 +58,20 @@ for i in range(N):
     v_rk23[i+1] = v_rk23[i] + h*(1/3*k1+2/3*k2)
 
 # Método RK4
+v_rk4 = np.zeros(N+1)
+v_rk4[0] = v0
+for i in range(N):
+    k1 = f(v_rk4[i])
+    vtemp = v_rk4[i]+1/2*h*k1
+    k2 = f(vtemp)
+    vtemp = v_rk4[i] + 1/2*h*k2
+    k3 = f(vtemp)
+    vtemp = v_rk4[i] + h*k3
+    k4 = f(vtemp)
+    v_rk4[i+1] = v_rk4[i] + h * (k1+2*k2+2*k3+k4)/6
+
+
+
 
 
 #Gráficos
