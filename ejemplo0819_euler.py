@@ -32,7 +32,7 @@ h = (tf - t0) / N
 # Inicializando arreglos para almacenar la solución
 v_euler = np.zeros(N+1)
 v_euler[0] =  v0  # Condición inicial
-# método de euler
+# método de eulerd
 for i in range(N):
     v_euler[i+1] = v_euler[i] + h * (-B/M * v_euler[i])
     #print(v_euler)
