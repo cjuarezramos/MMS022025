@@ -28,8 +28,8 @@ def motor_dc(t, x):
     v2 = x[2]   # Variable de control
     
     e = wref - omega
-    Kp = 1.0
-    Ti = 0.1
+    Kp = 10
+    Ti = 0.07
     V = v2 + Kp * e 
     di_dt = (V - R*i - Kb*omega) / L
     domega_dt = (Kt*i - b*omega) / J
