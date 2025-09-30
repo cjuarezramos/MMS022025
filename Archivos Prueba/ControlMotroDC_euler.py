@@ -11,21 +11,33 @@ Km = 0.25 # Constante de torque del motor (N·m/A)
 J = 0.00246 # Inercia del rotor (kg·m²)
 B = 0.003026 # Constante de fricción viscosa (V·s/rad)
 
+# Controlador:
+Kp = 2 # Ganancia proporcional
+Ti = 0.1 # Tiempo integral (s)
+
 # Función para calcular la derivada del estado
-def motor_dc_derivada(x, u):
+def motor_dc_derivada(x, wref, Td):
     i = x[0] # Corriente del motor
     w = x[1] # Velocidad angular del motor
+    u2 = x[2] # Variable para la integral del error (no se usa en este ejemplo)
+    # Controlador proporcional
+    error = wref - w
+    u1 = Kp * error # acción proporcional
+    u = u1 + u2 # Señal de control total
+    # Ecuaciones diferenciales del motor DC
     di_dt = (u - R*i - Ka*w) / L
-    dw_dt = (Km*i - B*w) / J
-    return np.array([di_dt, dw_dt])
+    dw_dt = (Km*i - B*w - Td) / J
+    #ecuacion diferencial de la integral del error
+    du2_dt = error * Kp/ Ti
+    return np.array([di_dt, dw_dt, du2_dt])
 
 # Método de Euler para resolver las ecuaciones diferenciales
-def euler(motor_dc_derivada, x0, u, t):
+def euler(motor_dc_derivada, x0, wref, t):
     dt = t[1] - t[0]
     x = np.zeros((len(t), len(x0)))
     x[0] = x0
     for k in range(1, len(t)):
-        x[k] = x[k-1] + motor_dc_derivada(x[k-1], u[k-1]) * dt
+        x[k] = x[k-1] + motor_dc_derivada(x[k-1], wref, Td[k-1]) * dt
     return x   
 # Tiempo de simulación
 tfin = 2
@@ -34,11 +46,19 @@ t = np.arange(0, tfin, dt)
 # Condiciones iniciales
 i0 = 0 # Corriente inicial
 w0 = 0 # Velocidad angular inicial
-x0 = np.array([i0, w0])
+u2_0 = 0 # Integral del error inicial
+x0 = np.array([i0, w0, u2_0])
 # Entrada de voltaje (escalón)
-u = np.ones(len(t)) * 12 # Voltaje constante de 12V
+# u = np.ones(len(t)) * 12 # Voltaje constante de 12V
+# Torque de carga (escalon)
+Td = np.zeros(len(t))
+Td[int(len(t)/2):] = 0.1 # Aplica un torque de
+
+wref = 40 #rad/s 
+
+
 # Simulación del motor DC
-sol = euler(motor_dc_derivada, x0, u, t)
+sol = euler(motor_dc_derivada, x0, wref, t)
 # Graficar resultados
 plt.figure()
 plt.subplot(2, 1, 1)
