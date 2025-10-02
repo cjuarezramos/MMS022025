@@ -19,8 +19,9 @@ def simulate():
     Z = float(Z_entry.get())         # Constante de tiempo τ
     wn = float(wn_entry.get())             # Paso de integración h
     h = float(h_entry.get())             # Paso de integración h
-    u = float(u_entry.get())             # Valor de entrada (escalón)
-    
+
+  
+
     t_max = float(t_entry.get())                           # Tiempo total de simulación (segundos)
     steps = int(t_max / h)               # Número de pasos de simulación
     t = np.linspace(0, t_max, steps)     # Vector de tiempo
@@ -29,12 +30,14 @@ def simulate():
     # Aplicamos el método de Euler para resolver la ecuación diferencial
     for k in range(steps - 1):
         y[k+1, 0] = y[k, 0] + h * y[k, 1]
-        y[k+1, 1] = y[k, 1] + h * ( -2*Z*wn*y[k, 1] - wn**2*y[k, 0] + wn**2*u )
+        y[k+1, 1] = y[k, 1] + h * ( -2*Z*wn*y[k, 1] - wn**2*y[k, 0] + wn**2*u(t[k]) )
 
     # Limpiamos el gráfico anterior
     ax.clear()
     # Graficamos la nueva respuesta
-    ax.plot(t, y, label=f"wn={wn}, Z={Z}, u={u}")
+    ax.plot(t, y, label=f"wn={wn}, Z={Z}")
+    entrada = [u(ti) for ti in t]
+    ax.plot(t, entrada, 'r--', label="Entrada")
     ax.set_title("Respuesta del sistema de segundo orden")
     ax.set_xlabel("Tiempo [s]")
     ax.set_ylabel("Salida y(t)")
@@ -43,13 +46,26 @@ def simulate():
     # Actualizamos el gráfico en la interfaz
     canvas.draw()
 
+def u(t):
+    tipo = tipo_entry.get()
+    offset = float(offset_entry.get())
+    frecuencia = float(frecuencia_entry.get())
+    if tipo == "Escalón":
+        return offset
+    elif tipo == "Senoidal":
+        return offset * np.sin(2 * np.pi * frecuencia * t)
+    elif tipo == "Rampa":
+        return offset * t
+    else:
+        return 0
+
 def reset():
     B_entry.delete(0, tk.END)
     B_entry.insert(0, "1.0")
     h_entry.delete(0, tk.END)
     h_entry.insert(0, "0.1")
-    u_entry.delete(0, tk.END)
-    u_entry.insert(0, "1.0")
+    offset_entry.delete(0, tk.END)
+    offset_entry.insert(0, "1.0")
     J_entry.delete(0, tk.END)
     J_entry.insert(0, "1.0")
     K_entry.delete(0, tk.END)
@@ -205,12 +221,21 @@ t_entry.grid(column=5, row=2)
 
 
 ttk.Label(frame, text="Datos de Entrada", font=("Arial", 14)).grid(row=0, column=[6], columnspan=2)
-ttk.Label(frame, text="Entrada u:").grid(column=6, row=1)
-u_entry = ttk.Entry(frame)
-u_entry.insert(0, "1.0")                 # Valor inicial por defecto
-u_entry.grid(column=7, row=1)
+opciones = ["Escalón", "Senoidal", "Rampa"]
+ttk.Label(frame, text="Tipo de entrada:").grid(column=6, row=1)
+tipo_entry = ttk.Combobox(frame, values=opciones, state="readonly")
+tipo_entry.set("Escalón")                 # Valor inicial por defecto
+tipo_entry.grid(column=7, row=1)
 
+ttk.Label(frame, text="Amplitud:").grid(column=6, row=2)
+offset_entry = ttk.Entry(frame)
+offset_entry.insert(0, "1.0")                 # Valor inicial por defecto
+offset_entry.grid(column=7, row=2)
 
+ttk.Label(frame, text="Frecuencia (Hz):").grid(column=6, row=3)
+frecuencia_entry = ttk.Entry(frame)
+frecuencia_entry.insert(0, "1.0")                 # Valor inicial por defecto
+frecuencia_entry.grid(column=7, row=3)
 
 
 # Botón para ejecutar la simulación
