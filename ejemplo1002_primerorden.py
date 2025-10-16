@@ -145,7 +145,7 @@ ttk.Button(frame, text="Simular", command=simulate).grid(column=2, row=4, column
 ttk.Button(frame, text="Resetear", command=reset).grid(column=5, row=4, columnspan=2)
 
 # Configuración del gráfico con matplotlib
-fig, ax = plt.subplots(figsize=(16, 9))   # Creamos la figura y el eje
+fig, ax = plt.subplots(figsize=(8, 4))   # Creamos la figura y el eje
 canvas = FigureCanvasTkAgg(fig, master=root)  # Integramos el gráfico en Tkinter
 canvas.get_tk_widget().grid(row=4, column=0, columnspan=2)
 
