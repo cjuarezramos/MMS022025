@@ -74,3 +74,14 @@ for k in K:
     t, y = ct.step_response(T)
     plt.plot(t, y)
 plt.show()
+
+#
+
+from sympy import symbols, limit, simplify
+# Convertir a expresión simbólica
+s = symbols('s')
+G_expr = simplify((1) / (s**2 + 3*s + 2))
+# Calcular constantes
+Kp = limit(G_expr, s, 0)
+Kv = limit(s * G_expr, s, 0)
+Ka = limit(s**2 * G_expr, s, 0)
