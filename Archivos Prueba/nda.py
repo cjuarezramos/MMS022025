@@ -1,10 +1,13 @@
 import control as ct
 import numpy as np
 import matplotlib.pyplot as plt
-
-G = ct.tf(1,[0.1,1])
-# Lugar de las raíces
-respuesta = ct.root_locus_map(G) # G es la función de transferencia de lazo abierto
-plt.figure()
-respuesta.plot()
+K = 1
+B = 0.1
+J = 0.01
+num_ol = [K]
+den_ol = [J, B, 0]
+G = ct.tf(num_ol, den_ol)
+# respuesta al escalón del sistema de lazo abierto
+# Lugar de las raíces del sistema
+ct.root_locus_map(G).plot()
 plt.show()
